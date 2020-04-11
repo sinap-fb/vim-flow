@@ -80,7 +80,8 @@ endfunction
 function! flow#typecheck()
   " Flow current outputs errors to stderr and gets fancy with single character
   " files
-  let flow_result = <SID>FlowClientCall('--timeout '.g:flow#timeout.' --retry-if-init false "'.expand('%:p').'"', '2> /dev/null')
+  let flow_result = <SID>FlowClientCall('--timeout '.g:flow#timeout.' --quiet --retry-if-init false "'.expand('%:p').'"', '2> /dev/null')
+  let flow_result = substitute(flow_result, "\n\n", "\n", 'g')
   let old_fmt = &errorformat
   let &errorformat = s:flow_errorformat
 
@@ -104,7 +105,7 @@ endfunction
 function! flow#get_type()
   let pos = line('.').' '.col('.')
   let path = ' --path '.fnameescape(expand('%'))
-  let cmd = g:flow#flowpath.' type-at-pos '.pos.path
+  let cmd = g:flow#flowpath.' type-at-pos --quiet '.pos.path
   let stdin = join(getline(1,'$'), "\n")
 
   let output = 'FlowType: '.system(cmd, stdin)
